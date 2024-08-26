@@ -1,7 +1,9 @@
-import pickle
+import joblib
 import streamlit as st
 import numpy as np
 from tensorflow.keras.models import load_model
+import sys
+sys.setrecursionlimit(5000)
 
 def return_prediction(model, scaler, sample_json):
     id = sample_json['ID']
@@ -16,14 +18,13 @@ def return_prediction(model, scaler, sample_json):
     de = sample_json['Demat']
     nb = sample_json['Net Banking']
     dc = [[id, pin, age, fm, edu, exp, inc, mo, fd, de, nb]]
-    dc = scaler.transform(dc)  # Use transform instead of fit_transform
-    predict = model.predict(dc)
-    classes = np.argmax(predict, axis=1)
-    return classes
+    dc = scaler.transform(dc)
+    predictions = model.predict(dc)
+    return predictions
 
 # Load the scaler and model
-scaler = pickle.load(open("C:\\Users\\Suyash Pandey\\PycharmProjects\\LOAN_CAMPAIGN\\scaler (4).pkl", "rb"))
-model = load_model("Loan_Predictor.h5")
+scaler = joblib.load("C:\\Users\\Suyash Pandey\\PycharmProjects\\LOAN_CAMPAIGN\\scaler.joblib")
+model = load_model("Loan_Predictor_2.joblib")
 
 # Streamlit interface
 st.title("Loan Provider")
@@ -43,13 +44,9 @@ nb = st.number_input("Net Banking (1: yes, 0: no)", min_value=0, max_value=1, st
 if st.button('Predict'):
     # Prepare input data
     sample_input = np.array([[id, pin, age, fm, edu, exp, inc, mo, fd, de, nb]])
-    dc_scaled = scaler.fit_transform(sample_input)
-    predict = model.predict(dc_scaled)
-    classes = np.argmax(predict, axis=1)
-    print(classes)
-    if classes == [[1]]:
+    dc_scaled = scaler.transform(sample_input)
+    prediction = model.predict(dc_scaled)
+    if prediction == 1:
         st.header("Loan has been successfully given to the customer")
     else:
         st.header("Bank failed in luring the customer")
-
-
