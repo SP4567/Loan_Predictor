@@ -23,7 +23,7 @@ def return_prediction(model, scaler, sample_json):
     return predictions
 
 # Load the scaler and model
-scaler = joblib.load("C:\\Users\\Suyash Pandey\\PycharmProjects\\LOAN_CAMPAIGN\\scaler.joblib")
+scaler = joblib.load("C:\\Users\\Suyash Pandey\\PycharmProjects\\LOAN_CAMPAIGN\\scaler.joblib", "rb")
 model = load_model("Loan_Predictor_2.joblib")
 
 # Streamlit interface
